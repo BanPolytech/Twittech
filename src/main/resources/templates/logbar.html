@@ -1,0 +1,9 @@
+
+<div class="container">
+    <form th:action="@{/logout}" method="post">
+        <ol class="breadcrumb">
+            <li>Logged in as <strong><th:block th:text="${username}" /></strong></li>
+            <li><a onclick="$(this).closest('form').submit()">Logout</a></li>
+        </ol>
+    </form>
+</div>
