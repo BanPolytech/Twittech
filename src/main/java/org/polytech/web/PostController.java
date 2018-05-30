@@ -9,9 +9,11 @@ import org.polytech.repository.HeartRepository;
 import org.polytech.repository.PostRepository;
 import org.polytech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 @Controller
 public class PostController {
 
+    @Qualifier("userRepository")
     @Autowired
     UserRepository userRepository;
 
@@ -35,7 +38,7 @@ public class PostController {
      * Get
      */
 
-    @GetMapping("/")
+    @GetMapping("/feed")
     public String index(Model model, Principal principal) {
 
         Iterable<Post> posts = postRepository.findAll();
@@ -46,6 +49,7 @@ public class PostController {
         return "/feed";
     }
 
+
     @RequestMapping("/post/{id}")
     public String post(@PathVariable(value="id") Long id, Model model, Principal principal) {
 
@@ -54,7 +58,7 @@ public class PostController {
         List<Heart> hearts = heartRepository.findAllByPost(post);
 
         if (post == null) {
-            return "redirect:/";
+            return "redirect:/feed";
         }
 
         model.addAttribute("post", post);
@@ -72,11 +76,11 @@ public class PostController {
     @PostMapping("/share")
     public String share(@RequestParam("content") String content, Principal principal) {
 
-        User author = userRepository.findByName(principal.getName());
+        User author = userRepository.findByEmail(principal.getName());
 
         postRepository.save(new Post(author, content));
 
-        return "redirect:/";
+        return "redirect:/feed";
     }
 
     @PostMapping("/comment/{id}")
@@ -85,7 +89,7 @@ public class PostController {
         User author = userRepository.findByName(principal.getName());
 
         if (post == null) {
-            return "redirect:/";
+            return "redirect:/feed";
         }
 
         commentRepository.save(new Comment(post, author, content));
@@ -99,7 +103,7 @@ public class PostController {
         User author = userRepository.findByName(principal.getName());
 
         if (post == null) {
-            return "redirect:/";
+            return "redirect:/feed";
         }
 
         heartRepository.save(new Heart(post, author));

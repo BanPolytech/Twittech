@@ -2,6 +2,7 @@ package org.polytech.business;
 
 import org.polytech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    @Qualifier("userRepository")
     @Autowired
     UserRepository userRepository;
 
@@ -24,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User `" + name + "` was not found");
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getName(), user.getHash(), new HashSet<>());
+        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), new HashSet<>());
     }
 
 }

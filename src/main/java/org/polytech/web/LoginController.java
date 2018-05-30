@@ -1,58 +1,87 @@
 package org.polytech.web;
 
-import org.polytech.business.User;
-import org.polytech.repository.UserRepository;
+import javax.validation.Valid;
+
+import org.polytech.business.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.polytech.repository.PostRepository;
+
+import org.polytech.business.User;
+import org.polytech.service.UserService;
+
 import java.security.Principal;
 
 @Controller
 public class LoginController {
 
     @Autowired
-    UserRepository userRepository;
+    PostRepository postRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private UserService userService;
 
-    @GetMapping("/login")
-    public String login() {
-        return "/login";
+    @RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
+    public ModelAndView login(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("login");
+        return modelAndView;
     }
 
-    @GetMapping("/register")
-    public String register() {
-        return "/register";
+
+    @RequestMapping(value="/registration", method = RequestMethod.GET)
+    public ModelAndView registration(){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = new User();
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("registration");
+        return modelAndView;
     }
 
-    @PostMapping("/register")
-    public String newUser(@RequestParam("username") String username, @RequestParam("password") String password) {
-
-        String hash = passwordEncoder.encode(password);
-        
-        userRepository.save(new User(username, hash));
-
-        return "redirect:/login?registered";
-    }
-
-    @PostMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            new SecurityContextLogoutHandler().logout(request, response, auth);
+    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
+        ModelAndView modelAndView = new ModelAndView();
+        User userExists = userService.findUserByEmail(user.getEmail());
+        if (userExists != null) {
+            bindingResult
+                    .rejectValue("email", "error.user",
+                            "There is already a user registered with the email provided");
         }
+        if (bindingResult.hasErrors()) {
+            modelAndView.setViewName("registration");
+        } else {
+            userService.saveUser(user);
+            modelAndView.addObject("successMessage", "User has been registered successfully");
+            modelAndView.addObject("user", new User());
+            modelAndView.setViewName("registration");
 
-        return "redirect:/login?logout";
+        }
+        return modelAndView;
     }
+
+    @RequestMapping(value="/admin/home", method = RequestMethod.GET)
+    public ModelAndView home(Model model, Principal principal){
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+        modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
+        modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
+        modelAndView.setViewName("admin/home");
+
+        Iterable<Post> posts = postRepository.findAll();
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("username", principal.getName());
+        return modelAndView;
+    }
+
+
 }

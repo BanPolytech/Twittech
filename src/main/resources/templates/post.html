@@ -37,7 +37,7 @@
             <div class="col-lg-1">
 
                 <form method="post" th:action="@{/heart/{id}(id=${post.id})}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
 
                     <button type="submit" class="btn btn-danger">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
@@ -48,7 +48,7 @@
             <div class="col-lg-11">
 
                 <form method="post" th:action="@{/comment/{id}(id=${post.id})}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
 
                     <div class="input-group input-group">
                         <input type="text" class="form-control" placeholder="Quoi de plus ?" name="content" />

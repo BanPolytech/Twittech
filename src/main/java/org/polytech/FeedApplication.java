@@ -28,6 +28,7 @@ public class FeedApplication {
                                   HeartRepository heartRepository,
                                   PasswordEncoder passwordEncoder) {
 		return (args) -> {
+			/*
 			// Add users
 			User bob = new User("Bob", passwordEncoder.encode("123"));
 			User alice = new User("Alice", passwordEncoder.encode("456"));
@@ -45,6 +46,7 @@ public class FeedApplication {
 
             // Add likes
             heartRepository.save(new Heart(hello, alice));
+            */
 		};
 	}
 }
