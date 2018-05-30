@@ -109,7 +109,8 @@ public class PostController {
     @PostMapping("/heart/{id}")
     public String heart(@PathVariable(value = "id") Long id, Principal principal) {
         Post post = postRepository.findOne(id);
-        User author = userRepository.findByName(principal.getName());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User author = userService.findUserByEmail(auth.getName());
 
         if (post == null) {
             return "redirect:/feed";
