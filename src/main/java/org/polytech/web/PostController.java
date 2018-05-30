@@ -8,6 +8,9 @@ import org.polytech.repository.CommentRepository;
 import org.polytech.repository.HeartRepository;
 import org.polytech.repository.PostRepository;
 import org.polytech.repository.UserRepository;
+import org.polytech.service.UserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -33,6 +36,9 @@ public class PostController {
 
     @Autowired
     HeartRepository heartRepository;
+
+    @Autowired
+    private UserService userService;
 
     /*
      * Get
@@ -86,7 +92,10 @@ public class PostController {
     @PostMapping("/comment/{id}")
     public String comment(@PathVariable(value = "id") Long id, @RequestParam("content") String content, Principal principal) {
         Post post = postRepository.findOne(id);
-        User author = userRepository.findByName(principal.getName());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User author = userService.findUserByEmail(auth.getName());
+
+
 
         if (post == null) {
             return "redirect:/feed";
