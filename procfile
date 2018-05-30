@@ -1,3 +1,0 @@
-#Procfile tells to Heroku how to run the app.
-
-web: java -jar classes/artifacts/feed_jar/feed.jar --server.port=$PORT
