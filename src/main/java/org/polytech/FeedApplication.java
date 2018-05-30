@@ -21,32 +21,4 @@ public class FeedApplication {
 		SpringApplication.run(FeedApplication.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner demo(PostRepository postRepository,
-                                  UserRepository userRepository,
-                                  CommentRepository commentRepository,
-                                  HeartRepository heartRepository,
-                                  PasswordEncoder passwordEncoder) {
-		return (args) -> {
-			/*
-			// Add users
-			User bob = new User("Bob", passwordEncoder.encode("123"));
-			User alice = new User("Alice", passwordEncoder.encode("456"));
-			userRepository.save(bob);
-			userRepository.save(alice);
-
-			// Add posts
-			Post hello = new Post(bob, "Hello");
-			postRepository.save(hello);
-			postRepository.save(new Post(bob, "World !"));
-			postRepository.save(new Post(alice, "Hey"));
-
-			// Add comments
-            commentRepository.save(new Comment(hello, alice, "Nice !"));
-
-            // Add likes
-            heartRepository.save(new Heart(hello, alice));
-            */
-		};
-	}
 }
